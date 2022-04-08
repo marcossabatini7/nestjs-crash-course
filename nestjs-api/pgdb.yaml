@@ -1,0 +1,89 @@
+# Save the output of this file and use kubectl create -f to import
+# it into Kubernetes.
+#
+# Created with podman-4.0.1
+apiVersion: v1
+kind: Service
+metadata:
+  annotations:
+    bind-mount-options:/home/sabatini/dev/podman/pga: Z
+  creationTimestamp: "2022-04-08T00:43:52Z"
+  labels:
+    app: pgdb
+  name: pgdb
+spec:
+  ports:
+  - name: "5432"
+    nodePort: 30008
+    port: 5432
+    targetPort: 5432
+  - name: "80"
+    nodePort: 31985
+    port: 80
+    targetPort: 80
+  selector:
+    app: pgdb
+  type: NodePort
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  annotations:
+    bind-mount-options:/home/sabatini/dev/podman/pga: Z
+  creationTimestamp: "2022-04-08T00:43:52Z"
+  labels:
+    app: pgdb
+  name: pgdb
+spec:
+  containers:
+  - env:
+    - name: PGADMIN_DEFAULT_PASSWORD
+      value: podman
+    - name: PGADMIN_DEFAULT_EMAIL
+      value: eu@meu.mail
+    image: docker.io/dpage/pgadmin4:latest
+    name: pgadmin12
+    ports:
+    - containerPort: 5432
+      hostPort: 5432
+    - containerPort: 80
+      hostPort: 8000
+    resources: {}
+    securityContext:
+      capabilities:
+        drop:
+        - CAP_MKNOD
+        - CAP_NET_RAW
+        - CAP_AUDIT_WRITE
+    volumeMounts:
+    - mountPath: /var/lib/pgadmin
+      name: 869183719fe5029e13950bdf41e6c230dc2f8134e0c794896cb346a87305f8e9-pvc
+  - args:
+    - postgres
+    env:
+    - name: POSTGRES_USER
+      value: admin
+    - name: POSTGRES_PASSWORD
+      value: podman
+    image: docker.io/library/postgres:latest
+    name: db
+    resources: {}
+    securityContext:
+      capabilities:
+        drop:
+        - CAP_MKNOD
+        - CAP_NET_RAW
+        - CAP_AUDIT_WRITE
+    volumeMounts:
+    - mountPath: /var/lib/postgresql/data
+      name: home-sabatini-dev-podman-pga-host-0
+  restartPolicy: Never
+  volumes:
+  - name: 869183719fe5029e13950bdf41e6c230dc2f8134e0c794896cb346a87305f8e9-pvc
+    persistentVolumeClaim:
+      claimName: 869183719fe5029e13950bdf41e6c230dc2f8134e0c794896cb346a87305f8e9
+  - hostPath:
+      path: /home/sabatini/dev/podman/pga
+      type: Directory
+    name: home-sabatini-dev-podman-pga-host-0
+status: {}
