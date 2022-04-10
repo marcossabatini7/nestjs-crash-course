@@ -4,7 +4,7 @@ import { JwtService } from '@nestjs/jwt'
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime'
 import { hash as argonHash, verify as argonVerify } from 'argon2'
 
-import { PrismaService } from 'src/prisma/prisma.service'
+import { PrismaService } from '../prisma/prisma.service'
 import { AuthDto } from './dto/auth.dto'
 
 type AcessToken = {
