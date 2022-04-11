@@ -13,7 +13,7 @@ services:
       - mcnet
   test-db:
     container_name: test-db
-    image: postgres-13
+    image: docker.io/library/postgres:latest
     ports:
       - 5435:5432
     environment:
